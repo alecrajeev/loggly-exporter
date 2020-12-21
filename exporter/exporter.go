@@ -8,7 +8,8 @@ import (
 	"encoding/json"
 )
 
-func Collect(subDomain string, token string) {
+
+func Collect2(subDomain string, token string) {
 
 	fmt.Printf("Collect metrics here\n")
 	query := "json.level(\"INFO\")"
