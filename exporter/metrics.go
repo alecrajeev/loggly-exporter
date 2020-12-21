@@ -16,3 +16,14 @@ func AddMetrics() map[string]*prometheus.Desc {
 
 	return APIMetrics
 }
+
+// processMetrics - processes the response data and sets the metrics using it as a source
+func (e *Exporter) processMetrics(data []*Datum, ch chan <- prometheus.Metric) error {
+
+	// APIMetrics - range through the data slice
+	for _, x := range data {
+		ch <- prometheus.MustNewConstMetric(e.APIMetrics["Count"], prometheus.GaugeValue, float64(x.Count))
+	}
+
+	return nil
+}

@@ -23,10 +23,9 @@ func main() {
 
 	exp := exporter.Exporter{
 		APIMetrics: mets,
+		Subdomain: subDomain,
+		Token: token,
 	}
-	_ = exp
-
-	exporter.Collect2(subDomain, token)
 
 	http.NewServer(exp).Start()
 }
