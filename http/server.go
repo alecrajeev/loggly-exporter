@@ -1,6 +1,7 @@
 package http
 
 import (
+	"strconv"
 	exporter "github.com/alecrajeev/loggly-exporter/exporter"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -36,7 +37,7 @@ func NewServer(exporter exporter.Exporter) *Server {
 }
 
 func (s *Server) Start() {
-	http.ListenAndServe(":"+"9786", s.Handler)
+	http.ListenAndServe(":"+strconv.Itoa(s.exporter.ListenerPort), s.Handler)
 }
 
 

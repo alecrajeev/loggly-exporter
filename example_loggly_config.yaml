@@ -1,0 +1,16 @@
+loggly_subdomain: "mylogglysubdomain"
+scrape_interval: 5
+port: 9786
+loggly_searches:
+  - query_name: "RecentInfoEvents"
+    search_query: "json.level:INFO"
+    start_datetime: "-10m"
+    end_datetime: "now"
+  - query_name: "RecentErrorEvents"
+    search_query: "json.level:ERROR"
+    start_datetime: "-10m"
+    end_datetime: "now"
+  - query_name: "RecentWarnEvents"
+    search_query: "json.level:Warn"
+    start_datetime: "-10m"
+    end_datetime: "now"
