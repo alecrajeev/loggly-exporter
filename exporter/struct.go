@@ -9,6 +9,7 @@ type Exporter struct {
 	APIMetrics map[string]*prometheus.Desc
 	Subdomain string
 	Token string
+	ListenerPort int
 }
 
 
