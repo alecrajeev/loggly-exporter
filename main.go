@@ -36,8 +36,17 @@ func main() {
 
 	fmt.Printf("Loggly Subdomain: %v\n", logglySubdomain)
 
-	logglyQuery := applicationConf.Query
-	fmt.Printf("Query: %v\n", logglyQuery)
+	var logglySearches []exporter.SearchQuery
+	for _, l := range applicationConf.LogglySearches {
+		logglySearches = append(logglySearches, exporter.SearchQuery {
+			Name: l.Name,
+			Query: l.Query,
+		})
+	}
+	if len(logglySearches) < 1 {
+		fmt.Printf("Need to add loggly_searches\n")
+		return
+	}
 
 	ListenerPort, err := strconv.Atoi(applicationConf.ListenerPort)
 	if err != nil {
@@ -55,7 +64,7 @@ func main() {
 		Subdomain: logglySubdomain,
 		Token: *logglyToken,
 		ListenerPort: ListenerPort,
-		Query: logglyQuery,
+		SearchQueries: logglySearches,
 	}
 
 	http.NewServer(exp).Start()

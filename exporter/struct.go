@@ -5,12 +5,18 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-type Exporter struct {
-	APIMetrics map[string]*prometheus.Desc
-	Subdomain string
-	Token string
-	ListenerPort int
+type SearchQuery struct {
+	Name string
 	Query string
+}
+
+type Exporter struct {
+	APIMetrics 			map[string]*prometheus.Desc
+	Subdomain 			string
+	Token 	     		string
+	ListenerPort		int
+	Query 				string
+	SearchQueries       []SearchQuery
 }
 
 
@@ -19,11 +25,17 @@ type Datum struct {
 	Count int `json:"count"`
 }
 
+type WrapperDatum struct {
+	CountDatum Datum
+	Name 	   string
+}
+
 // Response struct is used to store http.Response and associated data
 type Response struct {
 	subdomain string
-	response *http.Response
-	body []byte
-	err error
+	name 	  string
+	response  *http.Response
+	body 	  []byte
+	err 	  error
 
 }

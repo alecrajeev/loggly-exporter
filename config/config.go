@@ -8,8 +8,11 @@ import (
 
 type Conf struct {
 	LogglySubDomain string `yaml:"loggly_subdomain"`
-	ListenerPort string `yaml:"port"`
-	Query string `yaml:"query"`
+	ListenerPort 	string `yaml:"port"`
+	LogglySearches 	[]struct {
+		Name  string `yaml:"query_name"`
+		Query string `yaml:"search_query"`
+	} `yaml:"loggly_searches"`
 }
 
 func (c *Conf) Load(file *string) error {

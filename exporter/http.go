@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func asyncHTTPGets(subDomain string, token string, query string) ([]*Response, error) {
+func asyncHTTPGets(subDomain string, token string, searchQueries []SearchQuery) ([]*Response, error) {
 
 	queryCount := 1
 
@@ -16,13 +16,17 @@ func asyncHTTPGets(subDomain string, token string, query string) ([]*Response, e
 
 	responses := []*Response{}
 
-	go func(subDomain string) {
-		err := getResponse(subDomain, token, query, ch)
+	for _, sq := range searchQueries {
 
-		if err != nil {
-			ch <- &Response{subDomain, nil, []byte{}, err}
-		}
-	}(subDomain)
+
+		go func(subDomain string) {
+			err := getResponse(subDomain, token, sq.Name, sq.Query, ch)
+
+			if err != nil {
+				ch <- &Response{subDomain, sq.Name, nil, []byte{}, err}
+			}
+		}(subDomain)
+	}
 
 	for {
 		select {
@@ -41,7 +45,7 @@ func asyncHTTPGets(subDomain string, token string, query string) ([]*Response, e
 }
 
 // getResponse collects an individual http.response and returns a *Response
-func getResponse(subDomain string, token string, query string, ch chan<- *Response) error {
+func getResponse(subDomain string, token string, name string, query string, ch chan<- *Response) error {
 
 	resp, err := getHTTPResponse(subDomain, token, query)
 
@@ -59,7 +63,7 @@ func getResponse(subDomain string, token string, query string, ch chan<- *Respon
 		return errIo
 	}
 
-	ch <- &Response{subDomain, resp, body, errIo}
+	ch <- &Response{subDomain, name, resp, body, errIo}
 
 	return nil
 }
