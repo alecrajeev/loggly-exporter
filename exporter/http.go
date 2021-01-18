@@ -7,22 +7,26 @@ import (
 	"time"
 )
 
-func asyncHTTPGets(subDomain string, token string) ([]*Response, error) {
+func asyncHTTPGets(subDomain string, token string, searchQueries []SearchQuery) ([]*Response, error) {
 
-	queryCount := 1
+	queryCount := len(searchQueries)
 
 	// Channels used to make concurrent requests
 	ch := make(chan *Response, queryCount)
 
 	responses := []*Response{}
 
-	go func(subDomain string) {
-		err := getResponse(subDomain, token, ch)
+	for _, sq := range searchQueries {
+		name := sq.Name
+		query := sq.Query
+		go func(name string) {
+			err := getResponse(subDomain, token, name, query, ch)
 
-		if err != nil {
-			ch <- &Response{subDomain, nil, []byte{}, err}
-		}
-	}(subDomain)
+			if err != nil {
+				ch <- &Response{name, nil, []byte{}, err}
+			}
+		}(name)
+	}
 
 	for {
 		select {
@@ -41,9 +45,9 @@ func asyncHTTPGets(subDomain string, token string) ([]*Response, error) {
 }
 
 // getResponse collects an individual http.response and returns a *Response
-func getResponse(subDomain string, token string, ch chan<- *Response) error {
+func getResponse(subDomain string, token string, name string, query string, ch chan<- *Response) error {
 
-	resp, err := getHTTPResponse(subDomain, token)
+	resp, err := getHTTPResponse(subDomain, token, query)
 
 	if err != nil {
 		fmt.Println("Error getting response", err)
@@ -59,18 +63,17 @@ func getResponse(subDomain string, token string, ch chan<- *Response) error {
 		return errIo
 	}
 
-	ch <- &Response{subDomain, resp, body, errIo}
+	ch <- &Response{name, resp, body, errIo}
 
 	return nil
 }
 
 // getHTTPResponse handles the http client creation, token setting and returns the *http.response
-func getHTTPResponse(subDomain string, token string) (*http.Response, error) {
+func getHTTPResponse(subDomain string, token string, query string) (*http.Response, error) {
 	client := &http.Client{
 		Timeout: time.Second * 10,
 	}
 
-	query := "json.level:\"INFO\""
 	url := "https://" + subDomain + ".loggly.com/apiv2/events/count"
 	url = url + "?q=" + query
 

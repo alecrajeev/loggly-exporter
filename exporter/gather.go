@@ -7,13 +7,13 @@ import (
 
 
 // gatherData - Collects data from the API and stores into struct
-func (e *Exporter) gatherData() ([]*Datum, error) {
-	data := []*Datum{}
+func (e *Exporter) gatherData() ([]*WrapperDatum, error) {
+	wrapperData := []*WrapperDatum{}
 
-	responses, err := asyncHTTPGets(e.Subdomain, e.Token)
+	responses, err := asyncHTTPGets(e.Subdomain, e.Token, e.SearchQueries)
 
 	if err != nil {
-		return data, err
+		return wrapperData, err
 	}
 
 	for _, response := range responses {
@@ -26,9 +26,12 @@ func (e *Exporter) gatherData() ([]*Datum, error) {
 			fmt.Printf("Unable to parse json. Error: %v\n", errUnmarshal)
 		}
 
-		data = append(data, d)
+		wD := new(WrapperDatum)
+		wD.Name = response.name
+		wD.CountDatum = *d
 
+		wrapperData = append(wrapperData, wD)
 	}
 
-	return data, nil
+	return wrapperData, nil
 }

@@ -11,18 +11,19 @@ func AddMetrics() map[string]*prometheus.Desc {
 	APIMetrics["Count"] = prometheus.NewDesc(
 		prometheus.BuildFQName("loggly", "search", "count"),
 		"Number events in loggly for a particular search",
-		[]string{}, nil,
+		[]string{"name"}, nil,
 	)
 
 	return APIMetrics
 }
 
 // processMetrics - processes the response data and sets the metrics using it as a source
-func (e *Exporter) processMetrics(data []*Datum, ch chan <- prometheus.Metric) error {
+func (e *Exporter) processMetrics(wrapperData []*WrapperDatum, ch chan <- prometheus.Metric) error {
 
-	// APIMetrics - range through the data slice
-	for _, x := range data {
-		ch <- prometheus.MustNewConstMetric(e.APIMetrics["Count"], prometheus.GaugeValue, float64(x.Count))
+	// APIMetrics - range through the wrapperData slice
+	for _, w := range wrapperData {
+		x := w.CountDatum
+		ch <- prometheus.MustNewConstMetric(e.APIMetrics["Count"], prometheus.GaugeValue, float64(x.Count), w.Name)
 	}
 
 	return nil
