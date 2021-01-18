@@ -10,7 +10,7 @@ import (
 func (e *Exporter) gatherData() ([]*Datum, error) {
 	data := []*Datum{}
 
-	responses, err := asyncHTTPGets(e.Subdomain, e.Token)
+	responses, err := asyncHTTPGets(e.Subdomain, e.Token, e.Query)
 
 	if err != nil {
 		return data, err

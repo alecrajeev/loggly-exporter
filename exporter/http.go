@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func asyncHTTPGets(subDomain string, token string) ([]*Response, error) {
+func asyncHTTPGets(subDomain string, token string, query string) ([]*Response, error) {
 
 	queryCount := 1
 
@@ -17,7 +17,7 @@ func asyncHTTPGets(subDomain string, token string) ([]*Response, error) {
 	responses := []*Response{}
 
 	go func(subDomain string) {
-		err := getResponse(subDomain, token, ch)
+		err := getResponse(subDomain, token, query, ch)
 
 		if err != nil {
 			ch <- &Response{subDomain, nil, []byte{}, err}
@@ -41,9 +41,9 @@ func asyncHTTPGets(subDomain string, token string) ([]*Response, error) {
 }
 
 // getResponse collects an individual http.response and returns a *Response
-func getResponse(subDomain string, token string, ch chan<- *Response) error {
+func getResponse(subDomain string, token string, query string, ch chan<- *Response) error {
 
-	resp, err := getHTTPResponse(subDomain, token)
+	resp, err := getHTTPResponse(subDomain, token, query)
 
 	if err != nil {
 		fmt.Println("Error getting response", err)
@@ -65,12 +65,11 @@ func getResponse(subDomain string, token string, ch chan<- *Response) error {
 }
 
 // getHTTPResponse handles the http client creation, token setting and returns the *http.response
-func getHTTPResponse(subDomain string, token string) (*http.Response, error) {
+func getHTTPResponse(subDomain string, token string, query string) (*http.Response, error) {
 	client := &http.Client{
 		Timeout: time.Second * 10,
 	}
 
-	query := "json.level:\"INFO\""
 	url := "https://" + subDomain + ".loggly.com/apiv2/events/count"
 	url = url + "?q=" + query
 

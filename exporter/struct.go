@@ -10,6 +10,7 @@ type Exporter struct {
 	Subdomain string
 	Token string
 	ListenerPort int
+	Query string
 }
 
 

@@ -9,6 +9,7 @@ import (
 type Conf struct {
 	LogglySubDomain string `yaml:"loggly_subdomain"`
 	ListenerPort string `yaml:"port"`
+	Query string `yaml:"query"`
 }
 
 func (c *Conf) Load(file *string) error {
@@ -16,6 +17,7 @@ func (c *Conf) Load(file *string) error {
 
 	if err != nil {
 		fmt.Println("Error parsing yaml")
+		fmt.Println(err)
 		return err
 	}
 

@@ -36,6 +36,9 @@ func main() {
 
 	fmt.Printf("Loggly Subdomain: %v\n", logglySubdomain)
 
+	logglyQuery := applicationConf.Query
+	fmt.Printf("Query: %v\n", logglyQuery)
+
 	ListenerPort, err := strconv.Atoi(applicationConf.ListenerPort)
 	if err != nil {
 		fmt.Println("Got error parsing listener port")
@@ -52,6 +55,7 @@ func main() {
 		Subdomain: logglySubdomain,
 		Token: *logglyToken,
 		ListenerPort: ListenerPort,
+		Query: logglyQuery,
 	}
 
 	http.NewServer(exp).Start()
