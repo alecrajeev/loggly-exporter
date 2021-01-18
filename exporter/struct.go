@@ -32,7 +32,6 @@ type WrapperDatum struct {
 
 // Response struct is used to store http.Response and associated data
 type Response struct {
-	subdomain string
 	name 	  string
 	response  *http.Response
 	body 	  []byte

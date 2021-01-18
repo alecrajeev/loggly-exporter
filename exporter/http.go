@@ -9,7 +9,7 @@ import (
 
 func asyncHTTPGets(subDomain string, token string, searchQueries []SearchQuery) ([]*Response, error) {
 
-	queryCount := 1
+	queryCount := len(searchQueries)
 
 	// Channels used to make concurrent requests
 	ch := make(chan *Response, queryCount)
@@ -17,15 +17,15 @@ func asyncHTTPGets(subDomain string, token string, searchQueries []SearchQuery) 
 	responses := []*Response{}
 
 	for _, sq := range searchQueries {
-
-
-		go func(subDomain string) {
-			err := getResponse(subDomain, token, sq.Name, sq.Query, ch)
+		name := sq.Name
+		query := sq.Query
+		go func(name string) {
+			err := getResponse(subDomain, token, name, query, ch)
 
 			if err != nil {
-				ch <- &Response{subDomain, sq.Name, nil, []byte{}, err}
+				ch <- &Response{name, nil, []byte{}, err}
 			}
-		}(subDomain)
+		}(name)
 	}
 
 	for {
@@ -63,7 +63,7 @@ func getResponse(subDomain string, token string, name string, query string, ch c
 		return errIo
 	}
 
-	ch <- &Response{subDomain, name, resp, body, errIo}
+	ch <- &Response{name, resp, body, errIo}
 
 	return nil
 }
